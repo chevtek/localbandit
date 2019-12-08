@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./style.css";
 import axios from "axios";
 import moment from "moment";
+import racoonLoader from "../loading-graphics/racoon.gif";
 import { SongkickEvent, ResultsTableProps } from "../../interfaces";
 
 const Results = (props: ResultsTableProps) => {
@@ -12,6 +13,7 @@ const Results = (props: ResultsTableProps) => {
   useEffect(() => {
     if (!city || !state) return;
     setLoading(true);
+    setEventList([]);
     axios
       .get<SongkickEvent[]>("/api/events", {
         params: {
@@ -20,7 +22,7 @@ const Results = (props: ResultsTableProps) => {
         }
       })
       .then(response => {
-        setLoading(false);
+        setLoading(false)
         setEventList(response.data);
       })
       .catch(err => {
@@ -31,11 +33,7 @@ const Results = (props: ResultsTableProps) => {
 
   return (
     <>
-      {loading && <div className="lds-facebook">
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>}
+      {loading && <img style={{display: "block", margin: "auto"}} alt="Loading..." src={racoonLoader} />}
 
       {eventList.length > 0 &&
         <>
