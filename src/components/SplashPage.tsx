@@ -1,13 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import "./style.css";
 import Nav from "./Nav";
 import NavBar from "./NavBar";
 import Results from "./ResultsTable";
 import SearchFields from "./SearchFields";
+import { SearchForm } from "../../interfaces";
 
 const Splash = () => {
+  const [searchData, setSearchData] = useState({} as SearchForm);
+
   return (
     <div className='wrapper'>
+      <div>{JSON.stringify(searchData)}</div>
       <Nav />
       {/* <div className='header pb-10'>
         <h1 className='pt-10 font-mono text-5xl'>
@@ -15,8 +19,8 @@ const Splash = () => {
         </h1>
       </div> */}
 
-      <SearchFields />
-     
+      <SearchFields setSearchData={setSearchData} />
+
 
       {/* <ul class='flex'>
         <li class='mr-6'>
@@ -30,12 +34,12 @@ const Splash = () => {
           </a>
         </li>
       </ul>
-      
+
     // </div> */}
       <NavBar />
       <div className="flex flex-row mt-6 ml-20 mr-20">
         <div className="w-6/12">
-          <Results />
+          { searchData ? <Results searchData={searchData} /> : <h1>No Results</h1> }
         </div>
         <div className="w-6/12 artist-details">
           <h1>Artist's Top 10</h1>
