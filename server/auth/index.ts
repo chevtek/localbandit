@@ -77,7 +77,10 @@ export default app => {
     (_req, res) => res.redirect("/")
   );
 
-  app.get("/auth/spotify", passport.authenticate("spotify"));
+  app.get(
+    "/auth/spotify",
+    passport.authenticate("spotify", { scope: ["playlist-modify-private"] })
+  );
   app.get(
     "/auth/spotify/callback",
     passport.authenticate("spotify", { failureRedirect: "/login" }),
@@ -93,8 +96,9 @@ export default app => {
   app.get("/auth/user", (req, res) => res.json(req.user));
 
   return (req, res, next) => {
-    if (!req.user) {
-      res.status(401).send();
-    }
+    // if (!req.user) {
+    //   return res.status(401).send();
+    // }
+    next();
   };
 };
