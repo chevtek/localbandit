@@ -3,28 +3,51 @@ import "./login.css";
 import { EventDetailsProps, SongkickEvent } from "../../interfaces";
 import racoonLoader from "../loading-graphics/racoon.gif";
 import axios from "axios";
+import ArtistPreview from "./ArtistPreview";
+import { navigate } from "hookrouter";
 
-const EventDetails = (props: EventDetailsProps) => {
-  const { eventId, user } = props;
+const EventDetails = ({eventId, user}: EventDetailsProps) => {
+  if (!user) {
+    navigate("/");
+  }
+
   const [event, setEvent] = useState({} as SongkickEvent);
+  const [topTracks, setTopTracks] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
-    axios
-      .get<SongkickEvent>("/api/event", {
-        params: {
-          eventId
-        }
-      })
-      .then((response) => {
+    (async () => {
+      try {
+        setLoading(true);
+
+        const { data: eventData } = await axios
+          .get<SongkickEvent>("/api/event", {
+            params: {
+              eventId
+            }
+          });
+
+        setEvent(eventData);
+
+        const artistNames = eventData.performance
+          .map(performance => performance.artist.displayName)
+          .join(",");
+
+        const { data: topTracksData } = await axios
+          .get("/api/top-tracks", {
+            params: {
+              artistNames
+            }
+          });
+
+        setTopTracks(topTracksData);
         setLoading(false);
-        setEvent(response.data);
-      })
-      .catch((err) => {
+
+      } catch (err) {
         setLoading(false);
         console.log(err.response.data);
-      })
+      }
+    })();
   }, [eventId])
 
   return (
@@ -36,13 +59,23 @@ const EventDetails = (props: EventDetailsProps) => {
           src={racoonLoader}
         />
       )}
-      <h1 className="text-black text-3xl">Event Details</h1>
+      {event && !loading &&
+        <div>
+          <h1 className="text-black text-3xl">Event Details</h1>
+          {event.performance && event.performance.map(performance => {
 
-      {event.performance && event.performance.map(performance => {
-        return <img
-          className="artist-img"
-          src={`https://images.sk-static.com/images/media/profile_images/artists/${performance.artist.id}/huge_avatar`} />
-      })}
+            const [artistData] = topTracks
+              .filter(artistTopTrack =>
+                artistTopTrack.artistName === performance.artist.displayName);
+
+            return <ArtistPreview
+              key={performance.artist.id}
+              artistName={performance.artist.displayName}
+              artistId={performance.artist.id}
+              tracks={artistData.topTracks}/>
+          })}
+        </div>
+      }
     </div>
   );
 };

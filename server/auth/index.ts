@@ -79,7 +79,7 @@ export default (app) => {
 
   app.get(
     "/auth/spotify",
-    passport.authenticate("spotify", { scope: ["playlist-modify-private"] })
+    passport.authenticate("spotify", { scope: ["playlist-modify-private", "playlist-modify-public"] })
   );
   app.get(
     "/auth/spotify/callback",
