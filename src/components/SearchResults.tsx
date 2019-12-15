@@ -6,20 +6,22 @@ import racoonLoader from "../loading-graphics/racoon.gif";
 import { SongkickEvent, SearchResultsProps } from "../../interfaces";
 import { A } from "hookrouter";
 
-const SearchResults = (props: SearchResultsProps) => {
+const SearchResults = ({ searchData, show}: SearchResultsProps) => {
   const [eventList, setEventList] = useState<SongkickEvent[]>([]);
   const [loading, setLoading] = useState(false);
-  const { city, state } = props.searchData;
+  const { city, state, startDate, endDate } = searchData;
 
   useEffect(() => {
-    if (!city || !state) return;
+    if (!city || !state || !startDate || !endDate) return;
     setLoading(true);
     setEventList([]);
     axios
       .get<SongkickEvent[]>("/api/events", {
         params: {
           city,
-          state
+          state,
+          startDate,
+          endDate
         }
       })
       .then((response) => {
@@ -30,10 +32,10 @@ const SearchResults = (props: SearchResultsProps) => {
         setLoading(false);
         console.log(err.response.data);
       });
-  }, [city, state]);
+  }, [city, state, startDate, endDate]);
 
   return (
-    <div style={{ display: props.show ? "block" : "none" }}>
+    <div style={{ display: show ? "block" : "none" }}>
       {loading && (
         <img
           style={{ display: "block", margin: "auto" }}
@@ -79,7 +81,7 @@ const SearchResults = (props: SearchResultsProps) => {
               ))}
             </tbody>
           </table>
-    
+
         </>
       )}
     </div>
