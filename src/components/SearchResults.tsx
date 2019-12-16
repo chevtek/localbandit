@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import "./style.css";
-import axios from "axios";
 import moment from "moment";
 import racoonLoader from "../loading-graphics/racoon.gif";
 import { SongkickEvent, SearchResultsProps } from "../../interfaces";
 import { A } from "hookrouter";
+import apiUtil from "../utils/api.util";
 
 const SearchResults = ({ searchData, show}: SearchResultsProps) => {
   const [eventList, setEventList] = useState<SongkickEvent[]>([]);
@@ -12,26 +12,18 @@ const SearchResults = ({ searchData, show}: SearchResultsProps) => {
   const { city, state, startDate, endDate } = searchData;
 
   useEffect(() => {
-    if (!city || !state || !startDate || !endDate) return;
-    setLoading(true);
-    setEventList([]);
-    axios
-      .get<SongkickEvent[]>("/api/events", {
-        params: {
-          city,
-          state,
-          startDate,
-          endDate
-        }
-      })
-      .then((response) => {
+    (async () => {
+      try {
+        if (!city || !state || !startDate || !endDate) return;
+        setLoading(true);
+        setEventList([]);
+        const eventsData = await apiUtil.events(city, state, startDate, endDate);
         setLoading(false);
-        setEventList(response.data);
-      })
-      .catch((err) => {
+        setEventList(eventsData);
+      } catch (err) {
         setLoading(false);
-        console.log(err.response.data);
-      });
+      }
+    })();
   }, [city, state, startDate, endDate]);
 
   return (

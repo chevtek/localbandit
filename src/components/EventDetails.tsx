@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import "./login.css";
 import { EventDetailsProps, SongkickEvent } from "../../interfaces";
 import racoonLoader from "../loading-graphics/racoon.gif";
-import axios from "axios";
 import ArtistPreview from "./ArtistPreview";
 import { navigate } from "hookrouter";
+import apiUtil from "../utils/api.util";
 
 const EventDetails = ({eventId, user}: EventDetailsProps) => {
   if (!user) {
@@ -20,12 +20,7 @@ const EventDetails = ({eventId, user}: EventDetailsProps) => {
       try {
         setLoading(true);
 
-        const { data: eventData } = await axios
-          .get<SongkickEvent>("/api/event", {
-            params: {
-              eventId
-            }
-          });
+        const eventData = await apiUtil.event(eventId);
 
         setEvent(eventData);
 
@@ -33,19 +28,14 @@ const EventDetails = ({eventId, user}: EventDetailsProps) => {
           .map(performance => performance.artist.displayName)
           .join(",");
 
-        const { data: topTracksData } = await axios
-          .get("/api/top-tracks", {
-            params: {
-              artistNames
-            }
-          });
+        const topTracksData = await apiUtil.topTracks(artistNames);
 
         setTopTracks(topTracksData);
+
         setLoading(false);
 
       } catch (err) {
         setLoading(false);
-        console.log(err.response.data);
       }
     })();
   }, [eventId])
