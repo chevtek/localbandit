@@ -7,9 +7,9 @@ const ArtistPreview = ({ artistName, artistId, tracks }) => {
   };
   return (
     <div>
-      <h1>{artistName}</h1>
+      <h1 className="text-black">{artistName}</h1>
       <img
-        alt="artist image"
+        alt="artist"
         className="artist-img"
         src={`https://images.sk-static.com/images/media/profile_images/artists/${artistId}/huge_avatar`} />
       <ol>
