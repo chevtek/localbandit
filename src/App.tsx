@@ -17,13 +17,15 @@ const routes = {
   "/": () => (user: any) => <SplashPage user={user} />,
   "/home*": () => (user: any) => <HomePage user={user} />,
   "/event-details/:eventId": ({ eventId }: any) => (user: any) => (
-    <EventDetails user={user} eventId={eventId} />
+    <EventDetails user={user} eventId={parseInt(eventId)} />
   )
 };
 
 const modals = {
-  createPlaylist: ({ user }, modal, modals) => <CreatePlaylistModal user={user} modal={modal} modals={modals} />,
-  result: (options, modal) => <ResultModal options={options} modal={modal} />
+  createPlaylist: ({ user }, modal, modals) =>
+    <CreatePlaylistModal user={user} modal={modal} modals={modals} />,
+  result: (options, modal) =>
+    <ResultModal options={options} modal={modal} />
 };
 
 const App = () => {

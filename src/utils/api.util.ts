@@ -1,4 +1,6 @@
 import axios from "axios";
+import { navigate } from "hookrouter";
+import { SongkickEvent } from "../../interfaces";
 
 export default {
 
@@ -87,6 +89,20 @@ export default {
     }
   },
 
+  async saveEvent(event: SongkickEvent) {
+    try {
+      await axios.post("/api/save-event", { event });
+
+      await this.modals.result.open({
+        success: true,
+        title: "Event Saved",
+        body: `Successfully saved ${event.displayName} so you can come back to it later!`
+      });
+    } catch (err) {
+      this.handleError(err);
+    }
+  },
+
   async getUser() {
     try {
       const response = await axios.get("/auth/user");
@@ -98,10 +114,13 @@ export default {
   },
 
   async handleError(err) {
+    if (err.response.status === 401) {
+      return navigate("/auth/spotify");
+    }
     await this.modals.result.open({
       success: false,
-      title: `${err.status} Error!`,
-      body: `An error has occurred. ${err.toString()}`
+      title: `${err.response ? err.response.status : "Unknown"} Error!`,
+      body: err.response ? err.response.data : err.toString()
     });
     throw err;
   }

@@ -17,6 +17,7 @@ const ArtistPreview = ({ artistName, artistId, tracks }) => {
         <img
           alt="artist"
           className="artist-img border-black border-8 w-1/2 mt-2"
+          style={{backgroundImage: "url(https://assets.sk-static.com/images/default_images/huge_avatar/default-event.png)", backgroundSize: "cover"}}
           src={`https://images.sk-static.com/images/media/profile_images/artists/${artistId}/huge_avatar`} />
         </div>
         <div className=" justify-start ml-10">

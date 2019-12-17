@@ -18,10 +18,21 @@ const EventDetails = ({ eventId, user }: EventDetailsProps) => {
   const [event, setEvent] = useState({} as SongkickEvent);
   const [topTracks, setTopTracks] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [eventSaved, setEventSaved] = useState(false);
   const modals = useModals();
 
   useEffect(() => {
-    console.log("event details use effect firing");
+    if (!user || !user.savedEvents) {
+      return;
+    }
+    user.savedEvents.forEach(e => {
+      if (e.id === eventId) {
+        setEventSaved(true);
+      }
+    });
+  }, [eventId, user]);
+
+  useEffect(() => {
     (async () => {
       try {
         setLoading(true);
@@ -46,7 +57,16 @@ const EventDetails = ({ eventId, user }: EventDetailsProps) => {
         setLoading(false);
       }
     })();
-  }, [eventId, modals])
+  }, [eventId, modals]);
+
+  const saveEvent = async () => {
+    await apiUtil.saveEvent(event);
+    setEventSaved(true);
+    if (!user.savedEvents) {
+      user.savedEvents = [];
+    }
+    user.savedEvents.push(event);
+  };
 
   return (
     <div className="wrapper">
@@ -83,6 +103,8 @@ const EventDetails = ({ eventId, user }: EventDetailsProps) => {
             <div className="test flex w-full ">
             <div className="w-1/3 bg-gray-100 p-20">
             <h1 className="text-black text-4xl">Event Details</h1>
+            <textarea style={{height: "100px", width: "100%"}} value={JSON.stringify(event, null, 2)} readOnly></textarea>
+            <button disabled={eventSaved} className={` w-full mt-6 uppercase font-bold tracking-widest flex-shrink-0 bg-teal-400 border-teal-400 text-sm border-4 text-white py-1 px-6 ${eventSaved ? "opacity-50 cursor-not-allowed" : "hover:bg-teal-600 hover:border-teal-600"}`} onClick={saveEvent}>{ eventSaved ? "Event Saved" : "Save Event" }</button>
             </div>
             {event.performance && event.performance.map(performance => {
 
