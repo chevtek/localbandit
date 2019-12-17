@@ -5,11 +5,13 @@ import racoonLoader from "../loading-graphics/racoon.gif";
 import { SongkickEvent, SearchResultsProps } from "../../interfaces";
 import { A } from "hookrouter";
 import apiUtil from "../utils/api.util";
+import { useModals } from "@chevtek/hookmodals";
 
 const SearchResults = ({ searchData, show}: SearchResultsProps) => {
   const [eventList, setEventList] = useState<SongkickEvent[]>([]);
   const [loading, setLoading] = useState(false);
   const { city, state, startDate, endDate } = searchData;
+  const modals = useModals();
 
   useEffect(() => {
     (async () => {
@@ -17,6 +19,7 @@ const SearchResults = ({ searchData, show}: SearchResultsProps) => {
         if (!city || !state || !startDate || !endDate) return;
         setLoading(true);
         setEventList([]);
+        apiUtil.modals = modals;
         const eventsData = await apiUtil.events(city, state, startDate, endDate);
         setLoading(false);
         setEventList(eventsData);
@@ -24,7 +27,7 @@ const SearchResults = ({ searchData, show}: SearchResultsProps) => {
         setLoading(false);
       }
     })();
-  }, [city, state, startDate, endDate]);
+  }, [city, state, startDate, endDate, modals]);
 
   return (
     <div style={{ display: show ? "block" : "none" }}>

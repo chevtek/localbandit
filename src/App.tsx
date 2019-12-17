@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useRoutes } from "hookrouter";
 import apiUtil from "./utils/api.util";
+import { useModalProvider } from "@chevtek/hookmodals";
 
 import "../src/components/style.css";
 import HomePage from "./components/HomePage";
 import SplashPage from "./components/SplashPage";
 import EventDetails from "./components/EventDetails";
 import NotFound from "./components/NotFound";
-import SpotifyModal from "./components/SpotifyModal";
+import CreatePlaylistModal from "./components/CreatePlaylistModal";
 import ResultModal from "./components/ResultModal";
 
 import "./App.css";
@@ -20,7 +21,13 @@ const routes = {
   )
 };
 
+const modals = {
+  createPlaylist: ({ user }, modal, modals) => <CreatePlaylistModal user={user} modal={modal} modals={modals} />,
+  result: (options, modal) => <ResultModal options={options} modal={modal} />
+};
+
 const App = () => {
+  const ModalContainer = useModalProvider(modals);
   const [user, setUser] = useState(null as any);
 
   useEffect(() => {
@@ -33,8 +40,7 @@ const App = () => {
   return (
     <>
       <div>{useRoutes(routes)(user) || <NotFound />}</div>
-      <SpotifyModal user={user} />
-      <ResultModal />
+      <ModalContainer />
     </>
   );
 };

@@ -4,7 +4,6 @@ import UsStatesList from "./UsStatesList";
 import { SearchFieldsProps, SearchForm } from "../../interfaces";
 import moment from "moment";
 import dotenv from "dotenv";
-import e from "express";
 dotenv.config();
 
 const SearchFields = (props: SearchFieldsProps) => {

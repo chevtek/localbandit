@@ -1,10 +1,15 @@
 import React from "react";
 import apiUtil from "../utils/api.util";
+import { useModals } from "@chevtek/hookmodals";
 
 const ArtistPreview = ({ artistName, artistId, tracks }) => {
+  const modals = useModals();
+
   const addToSpotify = async () => {
+    apiUtil.modals = modals;
     await apiUtil.addTracks(tracks.map(track => track.uri)).catch();
   };
+
   return (
     <div>
       <h1 className="text-black">{artistName}</h1>

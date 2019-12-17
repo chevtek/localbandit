@@ -5,6 +5,7 @@ import racoonLoader from "../loading-graphics/racoon.gif";
 import ArtistPreview from "./ArtistPreview";
 import { navigate } from "hookrouter";
 import apiUtil from "../utils/api.util";
+import { useModals } from "@chevtek/hookmodals"
 
 const EventDetails = ({eventId, user}: EventDetailsProps) => {
   if (!user) {
@@ -14,11 +15,15 @@ const EventDetails = ({eventId, user}: EventDetailsProps) => {
   const [event, setEvent] = useState({} as SongkickEvent);
   const [topTracks, setTopTracks] = useState([]);
   const [loading, setLoading] = useState(false);
+  const modals = useModals();
 
   useEffect(() => {
+    console.log("event details use effect firing");
     (async () => {
       try {
         setLoading(true);
+
+        apiUtil.modals = modals;
 
         const eventData = await apiUtil.event(eventId);
 
@@ -38,7 +43,7 @@ const EventDetails = ({eventId, user}: EventDetailsProps) => {
         setLoading(false);
       }
     })();
-  }, [eventId])
+  }, [eventId, modals])
 
   return (
     <div className="wrapper">

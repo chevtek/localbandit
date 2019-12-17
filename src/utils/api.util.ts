@@ -1,12 +1,15 @@
 import axios from "axios";
-import modalUtil from "./modal.util";
 
 export default {
+
+  user: null,
+  modals: null,
+
   async createPlaylist(name) {
     try {
       await axios.post("/api/create-playlist", { name });
 
-      await modalUtil.open("result", {
+      await this.modals.result.open({
         success: true,
         title: "Playlist Created",
         body: `Successfully created playlist "localband.it: ${name} on your Spotify account!`
@@ -42,12 +45,12 @@ export default {
       const playlistFollowed = await this.playlistFollowed();
 
       if (!playlistFollowed) {
-        await modalUtil.open("create-playlist");
+        await this.modals.createPlaylist.open({ user: this.user });
       }
 
       await axios.post("/api/add-tracks", { trackURIs });
 
-      await modalUtil.open("result", {
+      await this.modals.result.open({
         success: true,
         title: "Tracks Added",
         body: `Successfully added ${trackURIs.length} tracks to your Spotify playlist!`
@@ -95,17 +98,12 @@ export default {
   },
 
   async handleError(err) {
-    debugger;
-    await modalUtil.open("result", {
+    await this.modals.result.open({
       success: false,
       title: `${err.status} Error!`,
-      body: `
-        An error has occurred.
-        <br />
-        <br />
-        ${err.toString()}
-      `
+      body: `An error has occurred. ${err.toString()}`
     });
     throw err;
   }
+
 };
